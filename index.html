@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Massage Chair Dealers Near You | Massage Chair Directory</title>
+    <meta name="description" content="Find massage chair dealers and showrooms near you. Browse our directory of massage chair retailers by state and try chairs in person before you buy.">
+    <meta property="og:title" content="Find Massage Chair Dealers Near You | Massage Chair Directory">
+    <meta property="og:description" content="Find massage chair dealers and showrooms near you. Browse our directory of massage chair retailers by state and try chairs in person before you buy.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://massagechaircafe.com">
+    <link rel="canonical" href="https://massagechaircafe.com">
+    <meta name="robots" content="index, follow">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        /* Core styles */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            width: 100%;
+            max-width: 48rem;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .logo-container {
+            width: 120px;
+            height: 48px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-nav {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Filter Styles */
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+        }
+
+        /* Listing Card Styles */
+        .listing-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-rated-card {
+            background: linear-gradient(to right, #ffffff, #f8faff);
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #2563eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .top-rated-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .top-rated-badge {
+            position: absolute;
+            top: 1rem;
+            right: -2rem;
+            background: #2563eb;
+            color: white;
+            padding: 0.25rem 2.5rem;
+            transform: rotate(45deg);
+            font-size: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-open {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-closed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Achievement Badges */
+        .achievement-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        /* Modal Header */
+        .modal-header {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            padding: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .close-button:hover {
+            opacity: 1;
+        }
+
+        /* Common Elements */
+        .listing-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .listing-address {
+            color: #4b5563;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .listing-reviews {
+            color: #2563eb;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #f3f4ff;
+            color: #4338ca;
+            display: inline-flex;
+        }
+
+        /* Button Styles */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .action-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Section Styles */
+        .info-section {
+            background: #f8faff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem 1.5rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .hours-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 1rem;
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="logo-container">
+                        <span class="text-gray-400 text-lg">Logo</span>
+                    </div>
+                    <h1 class="text-xl font-semibold">Massage Chair Directory</h1>
+                </div>
+                <button id="add-listing-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Submit a Store
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-64">
+                <div class="bg-white p-6 rounded-xl border border-gray-200">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                        <select id="state-filter" class="filter-select">
+                            <option value="">All States</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                        <select id="sort-filter" class="filter-select">
+                            <option value="rating_desc">Highest Rating</option>
+                            <option value="rating_asc">Lowest Rating</option>
+                        </select>
+                    </div>
+                    <button id="clear-filters" class="w-full py-2 bg-yellow-100 text-gray-800 rounded-lg hover:bg-yellow-200 transition-colors">
+                        Clear all filters
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="flex-1">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">Find Massage Chair Dealers</h2>
+                    <p class="text-gray-600">
+                        Discover showrooms and dealers with massage chairs available to try near you.
+                    </p>
+                </div>
+
+                <div id="listings-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Listings will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Listing Detail Modal -->
+    <div id="listing-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="modal-badges"></div>
+                <h3 class="text-2xl font-bold" id="detail-title"></h3>
+                <button class="close-button" onclick="closeListing()">✕</button>
+            </div>
+            <div class="p-8" id="detail-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        const state = {
+            listings: [],
+            filters: {
+                state: '',
+                sort: 'rating_desc'
+            }
+        };
+
+        // Utility Functions
+        function toTitleCase(str) {
+            if (!str) return '';
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        function getAchievements(achievements) {
+            if (!achievements) return [];
+            return Array.isArray(achievements) ? achievements : achievements.split(',');
+        }
+
+        function isStoreOpen(hours) {
+            if (!hours) return false;
+            const now = new Date();
+            const hour = now.getHours();
+            const day = now.getDay();
+            
+            try {
+                const hoursArray = hours.split('\n');
+                const todayHours = hoursArray[day];
+                if (!todayHours) return false;
+
+                const [, timeRange] = todayHours.split(':');
+                const [openTime, closeTime] = timeRange.split('-').map(t => {
+                    const [time, period] = t.trim().split(' ');
+                    const [h] = time.split(':');
+                    let hour = parseInt(h);
+                    if (period === 'PM' && hour !== 12) hour += 12;
+                    if (period === 'AM' && hour === 12) hour = 0;
+                    return hour;
+                });
+
+                return hour >= openTime && hour < closeTime;
+            } catch (e) {
+                console.error('Error parsing hours:', e);
+                return false;
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50';
+            errorDiv.innerHTML = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function closeListing() {
+            document.getElementById('listing-detail-modal').classList.remove('active');
+        }
+
+        // Listing Management
+        const ListingManager = {
+            async fetchListings() {
+                try {
+                    showLoading();
+                    
+                    let url = '/api/listings';
+                    if (state.filters.state) {
+                        url += `?state=${encodeURIComponent(state.filters.state.toLowerCase())}`;
+                    }
+
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch listings');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    let listings = data.records
+                        .filter(record => Object.keys(record.fields).length > 0)
+                        .map(record => ({
+                            id: record.id,
+                            ...record.fields
+                        }));
+
+                    listings.sort((a, b) => {
+                        if (a.is_top_rated && !b.is_top_rated) return -1;
+                        if (!a.is_top_rated && b.is_top_rated) return 1;
+                        if (state.filters.sort === 'rating_desc') {
+                            return (b.rating || 0) - (a.rating || 0);
+                        } else {
+                            return (a.rating || 0) - (b.rating || 0);
+                        }
+                    });
+
+                    state.listings = listings;
+                    this.renderListings();
+
+                } catch (error) {
+                    console.error('Error fetching listings:', error);
+                    showError(`Failed to load listings: ${error.message}`);
+                } finally {
+                    hideLoading();
+                }
+            },
+
+            renderListings() {
+                const grid = document.getElementById('listings-grid');
+                
+                if (!state.listings.length) {
+                    grid.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <p class="text-gray-500">No listings found matching your criteria.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = state.listings
+                    .map(listing => {
+                        const listingData = JSON.stringify(listing).replace(/'/g, '&apos;');
+                        return listing.is_top_rated ? 
+                            this.renderTopRatedCard(listing, listingData) : 
+                            this.renderRegularCard(listing, listingData);
+                    })
+                    .join('');
+            },
+
+            renderTopRatedCard(listing, listingData) {
+                const isOpen = isStoreOpen(listing.store_hours);
+                return `
+                    <article class="top-rated-card" onclick='ListingManager.showDetails(${listingData})'>
+                        <div class="top-rated-badge">Top Rated</div>
+                        
+                        <div class="listing-title">
+                            ${listing.name || 'Unnamed Store'}
+                        </div>
+                        
+                        <div class="flex items-center mb-4">
+                            <span class="status-badge ${isOpen ? 'status-open' : 'status-closed'}">
+                                <span class="mr-1">●</span> ${isOpen ? 'Open Now' : 'Closed'}
+                            </span>
+                            <span class="text-sm text-gray-600 ml-2">
+                                ${isOpen ? 'Closes Today' : 'Opens Tomorrow'}
+                            </span>
+                        </div>
+                        
+                        <address class="listing-address not-italic">
+                            ${listing.street_address || ''}<br>
+                            ${toTitleCase(listing.city || '')}, ${toTitleCase(listing.state || '')} ${listing.zip || ''}
+                        </address>
+                        
+                        <div class="listing-reviews">
+                            ${listing.rating || '0'} stars (${listing.review_count || '0'} reviews)
+                        </div>
+                        
+                        <div class="listing-chairs">
+                            ${listing.chairs_available || '0'} chairs available in store
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tag">${toTitleCase(listing.state || '')}</span>
+                            ${(listing.brands || '').split(',')
+                                .filter(Boolean)
+                                .map(brand => `<span class="tag">${brand.trim()}</span>`)
+                                .join('')}
+                        </div>
+                        
+                        <div class="button-group">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                                `${listing.street_address}, ${listing.city}, ${listing.state} ${listing.zip}`
+                            )}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="action-button"
+                               onclick="event.stopPropagation()">
+                                Get Directions
+                            </a>
+                            <a href="tel:${listing.phone || ''}"
+                               class="action-button"
+                               onclick="event.stopPropagation()">
+                                Call Now
+                            </a>
+                        </div>
+                    </article>
+                `;
+            },
+
+            renderRegularCard(listing, listingData) {
+                return `
+                    <article class="listing-card">
+                        <div class="listing-title" onclick='ListingManager.showDetails(${listingData})'>
+                            ${listing.name || 'Unnamed Store'}
+                        </div>
+                        
+                        <address class="listing-address not-italic">
+                            ${listing.street_address || ''}<br>
+                            ${toTitleCase(listing.city || '')}, ${toTitleCase(listing.state || '')} ${listing.zip || ''}
+                        </address>
+                        
+                        <div class="listing-reviews">
+                            ${listing.rating || '0'} stars (${listing.review_count || '0'} reviews)
+                        </div>
+                        
+                        <div class="listing-chairs">
+                            ${listing.chairs_available || '0'} chairs available in store
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tag">${toTitleCase(listing.state || '')}</span>
+                            ${(listing.brands || '').split(',')
+                                .filter(Boolean)
+                                .map(brand => `<span class="tag">${brand.trim()}</span>`)
+                                .join('')}
+                        </div>
+                        
+                        <div class="button-group">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                                `${listing.street_address}, ${listing.city}, ${listing.state} ${listing.zip}`
+                            )}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="action-button">
+                                Get Directions
+                            </a>
+                            <a href="tel:${listing.phone || ''}"
+                               class="action-button">
+                                Call Now
+                            </a>
+                        </div>
+                    </article>
+                `;
+            },
+
+            showDetails(listing) {
+                console.log('Showing details for:', listing);
+                const modal = document.getElementById("listing-detail-modal");
+                const modalBadges = document.getElementById("modal-badges");
+                const modalTitle = document.getElementById("detail-title");
+                const modalContent = document.getElementById("detail-content");
+
+                modalBadges.innerHTML = listing.is_top_rated ? `
+                    <div class="verification-badge">
+                        <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        Top Rated Dealer
+                    </div>
+                ` : '';
+
+                modalTitle.textContent = listing.name || '';
+
+                modalContent.innerHTML = `
+                    <div class="space-y-6">
+                        <!-- Status and Basic Info -->
+                        <div class="flex flex-wrap items-center gap-4">
+                            ${listing.store_hours ? `
+                                <span class="status-badge ${isStoreOpen(listing.store_hours) ? 'status-open' : 'status-closed'}">
+                                    <span class="mr-1">●</span> ${isStoreOpen(listing.store_hours) ? 'Open Now' : 'Closed'}
+                                </span>
+                            ` : ''}
+                            <span class="text-sm text-gray-600">${listing.chairs_available || '0'} chairs available</span>
+                        </div>
+
+                        <!-- Store Hours -->
+                        ${listing.store_hours ? `
+                            <div class="info-section">
+                               <h4 class="font-semibold mb-4">Store Hours</h4>
+                                <div class="hours-grid">
+                                    ${listing.store_hours.split('\n').map(line => {
+                                        const [day, hours] = line.split(':');
+                                        return `
+                                            <span class="font-medium">${day}</span>
+                                            <span class="text-gray-600">${hours}</span>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- Achievements -->
+                        ${listing.achievements ? `
+                            <div class="info-section">
+                                <h4 class="font-semibold mb-4">Store Features</h4>
+                                <div class="grid md:grid-cols-2 gap-3">
+                                    ${getAchievements(listing.achievements).map(achievement => `
+                                        <div class="achievement-badge">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>${achievement}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- About Section -->
+                        ${listing.about_text ? `
+                            <div class="info-section">
+                                <h4 class="font-semibold mb-4">About Us</h4>
+                                <p class="text-gray-600">${listing.about_text}</p>
+                            </div>
+                        ` : ''}
+
+                        <!-- Brands Section -->
+                        ${listing.brands ? `
+                            <div class="info-section">
+                                <h4 class="font-semibold mb-4">Available Brands</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${listing.brands.split(',')
+                                        .filter(Boolean)
+                                        .map(brand => `<span class="tag">${brand.trim()}</span>`)
+                                        .join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- Action Buttons -->
+                        <div class="button-group">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                                `${listing.street_address}, ${listing.city}, ${listing.state} ${listing.zip}`
+                            )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="action-button">
+                                Get Directions
+                            </a>
+                            <a href="tel:${listing.phone || ''}"
+                                class="action-button">
+                                Call Now
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.add("active");
+            },
+
+            async populateStates() {
+                try {
+                    const response = await fetch('/api/listings');
+                    if (!response.ok) {
+                        throw new Error('Failed to load states');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    const states = [...new Set(data.records
+                        .filter(record => record.fields && record.fields.state)
+                        .map(record => record.fields.state.toLowerCase())
+                        .filter(Boolean)
+                    )].sort();
+                    
+                    document.getElementById('state-filter').innerHTML = 
+                        '<option value="">All States</option>' + 
+                        states.map(state => `
+                            <option value="${state}">
+                                ${toTitleCase(state)}
+                            </option>
+                        `).join('');
+                    
+                } catch (error) {
+                    console.error('Error loading states:', error);
+                    showError('Failed to load states: ' + error.message);
+                }
+            }
+        };
+
+        // Event Listeners
+        document.getElementById('state-filter').addEventListener('change', (e) => {
+            state.filters.state = e.target.value;
+            ListingManager.fetchListings();
+        });
+
+        document.getElementById('sort-filter').addEventListener('change', (e) => {
+            state.filters.sort = e.target.value;
+            ListingManager.fetchListings();
+        });
+
+        document.getElementById('clear-filters').addEventListener('click', () => {
+            state.filters.state = '';
+            state.filters.sort = 'rating_desc';
+            
+            document.getElementById('state-filter').value = '';
+            document.getElementById('sort-filter').value = 'rating_desc';
+            
+            ListingManager.fetchListings();
+        });
+
+        document.getElementById('add-listing-btn').addEventListener('click', () => {
+            window.location.href = 'mailto:massagechairdealers@protonmail.com?subject=Submit%20New%20Store%20Listing';
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('listing-detail-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeListing();
+            }
+        });
+
+        // Close modal with escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeListing();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                showLoading();
+                await ListingManager.populateStates();
+                await ListingManager.fetchListings();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('Failed to initialize application: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+    </script>
+</body>
+</html>
